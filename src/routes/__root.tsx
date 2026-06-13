@@ -1,4 +1,5 @@
-// src/routes/__root.tsx
+import '@mantine/core/styles.css'
+
 import type { ReactNode } from 'react'
 import {
   Outlet,
@@ -6,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from '@tanstack/react-router'
+import { MantineProvider } from '@mantine/core'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -28,7 +30,9 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <MantineProvider>
+        <Outlet />
+      </MantineProvider>
     </RootDocument>
   )
 }
