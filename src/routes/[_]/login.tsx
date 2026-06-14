@@ -12,23 +12,34 @@ import {
   Title,
 } from '@mantine/core'
 import { Container, Paper, TextInput } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 
-const signIn = createServerFn().handler(async (ctx) => {
-  await auth.api.signInEmail({
-    body: {
-      email: 'test@example.com',
-      password: 'mypassword',
-    },
+const signIn = createServerFn({ method: 'POST' })
+  .validator((data: { email: string; password: string }) => data)
+  .handler(async ({ data }) => {
+    await auth.api.signInEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+      },
+    })
   })
-})
 
 export const Route = createFileRoute('/_/login')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      email: '',
+      password: '',
+    },
+  })
+
   return (
     <main style={{ height: '100dvh' }}>
       <Center h="100%">
@@ -42,33 +53,45 @@ function RouteComponent() {
           </Text>
 
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
-            <TextInput
-              label="Email"
-              placeholder="you@example.com"
-              required
-              radius="md"
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Your password"
-              required
-              mt="md"
-              radius="md"
-            />
-            <Group justify="space-between" mt="lg">
-              <Checkbox label="Remember me" />
-              <Anchor component="button" size="sm">
-                Forgot password?
-              </Anchor>
-            </Group>
-            <Button
-              fullWidth
-              mt="xl"
-              radius="md"
-              onClick={() => signIn().catch(console.error)}
+            <form
+              onSubmit={form.onSubmit((values) => {
+                console.log(values)
+                signIn({
+                  data: {
+                    email: values.email,
+                    password: values.password,
+                  },
+                })
+              })}
             >
-              Sign in
-            </Button>
+              <TextInput
+                label="Email"
+                placeholder="you@example.com"
+                required
+                radius="md"
+                type="email"
+                key={form.key('email')}
+                {...form.getInputProps('email')}
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                required
+                mt="md"
+                radius="md"
+                key={form.key('password')}
+                {...form.getInputProps('password')}
+              />
+              <Group justify="space-between" mt="lg">
+                <Checkbox label="Remember me" />
+                <Anchor component="button" size="sm">
+                  Forgot password?
+                </Anchor>
+              </Group>
+              <Button type="submit" fullWidth mt="xl" radius="md">
+                Sign in
+              </Button>
+            </form>
 
             <Text ta="center" mt="sm">
               <TypedAnchor to="/_/signup">Create Account</TypedAnchor>
