@@ -8,6 +8,7 @@ import {
   Scripts,
 } from '@tanstack/react-router'
 import { MantineProvider } from '@mantine/core'
+import theme from '../theme'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -30,7 +31,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <MantineProvider>
+      <MantineProvider theme={theme}>
         <Outlet />
       </MantineProvider>
     </RootDocument>
