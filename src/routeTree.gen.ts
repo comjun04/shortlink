@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Char91_Char93SignupRouteImport } from './routes/[_]/signup'
 import { Route as Char91_Char93LoginRouteImport } from './routes/[_]/login'
 import { Route as Char91_Char93ApiAuthSplatRouteImport } from './routes/[_]/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91_Char93SignupRoute = Char91_Char93SignupRouteImport.update({
+  id: '/_/signup',
+  path: '/_/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91_Char93LoginRoute = Char91_Char93LoginRouteImport.update({
@@ -33,30 +39,34 @@ const Char91_Char93ApiAuthSplatRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/signup': typeof Char91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/signup': typeof Char91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/signup': typeof Char91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_/login' | '/_/api/auth/$'
+  fullPaths: '/' | '/_/login' | '/_/signup' | '/_/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_/login' | '/_/api/auth/$'
-  id: '__root__' | '/' | '/_/login' | '/_/api/auth/$'
+  to: '/' | '/_/login' | '/_/signup' | '/_/api/auth/$'
+  id: '__root__' | '/' | '/_/login' | '/_/signup' | '/_/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Char91_Char93LoginRoute: typeof Char91_Char93LoginRoute
+  Char91_Char93SignupRoute: typeof Char91_Char93SignupRoute
   Char91_Char93ApiAuthSplatRoute: typeof Char91_Char93ApiAuthSplatRoute
 }
 
@@ -67,6 +77,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_/signup': {
+      id: '/_/signup'
+      path: '/_/signup'
+      fullPath: '/_/signup'
+      preLoaderRoute: typeof Char91_Char93SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_/login': {
@@ -89,6 +106,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Char91_Char93LoginRoute: Char91_Char93LoginRoute,
+  Char91_Char93SignupRoute: Char91_Char93SignupRoute,
   Char91_Char93ApiAuthSplatRoute: Char91_Char93ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,30 +1,18 @@
 import TypedAnchor from '@/components/TypedAnchor'
-import { auth } from '@/lib/auth'
 import {
-  Anchor,
   Button,
-  Center,
-  Checkbox,
-  Group,
+  Container,
+  Paper,
   PasswordInput,
-  Space,
   Text,
-  Title,
+  TextInput,
 } from '@mantine/core'
-import { Container, Paper, TextInput } from '@mantine/core'
+import { Space } from '@mantine/core'
+import { Title } from '@mantine/core'
+import { Center } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
 
-const signIn = createServerFn().handler(async (ctx) => {
-  await auth.api.signInEmail({
-    body: {
-      email: 'test@example.com',
-      password: 'mypassword',
-    },
-  })
-})
-
-export const Route = createFileRoute('/_/login')({
+export const Route = createFileRoute('/_/signup')({
   component: RouteComponent,
 })
 
@@ -38,7 +26,7 @@ function RouteComponent() {
           <Space h="md" />
 
           <Text ta="center" fz="h2">
-            Login
+            Sign Up
           </Text>
 
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
@@ -55,23 +43,13 @@ function RouteComponent() {
               mt="md"
               radius="md"
             />
-            <Group justify="space-between" mt="lg">
-              <Checkbox label="Remember me" />
-              <Anchor component="button" size="sm">
-                Forgot password?
-              </Anchor>
-            </Group>
-            <Button
-              fullWidth
-              mt="xl"
-              radius="md"
-              onClick={() => signIn().catch(console.error)}
-            >
-              Sign in
+            <Button fullWidth mt="xl" radius="md">
+              Sign Up
             </Button>
 
             <Text ta="center" mt="sm">
-              <TypedAnchor to="/_/signup">Create Account</TypedAnchor>
+              Already have an account?{' '}
+              <TypedAnchor to="/_/login">Login</TypedAnchor>
             </Text>
           </Paper>
         </Container>
