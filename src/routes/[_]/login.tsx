@@ -1,3 +1,4 @@
+import { auth } from '@/lib/auth'
 import {
   Anchor,
   Button,
@@ -11,6 +12,16 @@ import {
 } from '@mantine/core'
 import { Container, Paper, TextInput } from '@mantine/core'
 import { createFileRoute } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+
+const signIn = createServerFn().handler(async (ctx) => {
+  await auth.api.signInEmail({
+    body: {
+      email: 'test@example.com',
+      password: 'mypassword',
+    },
+  })
+})
 
 export const Route = createFileRoute('/_/login')({
   component: RouteComponent,
@@ -49,7 +60,12 @@ function RouteComponent() {
                 Forgot password?
               </Anchor>
             </Group>
-            <Button fullWidth mt="xl" radius="md">
+            <Button
+              fullWidth
+              mt="xl"
+              radius="md"
+              onClick={() => signIn().catch(console.error)}
+            >
               Sign in
             </Button>
           </Paper>

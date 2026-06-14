@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Char91_Char93LoginRouteImport } from './routes/[_]/login'
+import { Route as Char91_Char93ApiAuthSplatRouteImport } from './routes/[_]/api/auth.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,41 @@ const Char91_Char93LoginRoute = Char91_Char93LoginRouteImport.update({
   path: '/_/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91_Char93ApiAuthSplatRoute =
+  Char91_Char93ApiAuthSplatRouteImport.update({
+    id: '/_/api/auth/$',
+    path: '/_/api/auth/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_/login': typeof Char91_Char93LoginRoute
+  '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_/login'
+  fullPaths: '/' | '/_/login' | '/_/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_/login'
-  id: '__root__' | '/' | '/_/login'
+  to: '/' | '/_/login' | '/_/api/auth/$'
+  id: '__root__' | '/' | '/_/login' | '/_/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   Char91_Char93LoginRoute: typeof Char91_Char93LoginRoute
+  Char91_Char93ApiAuthSplatRoute: typeof Char91_Char93ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +76,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91_Char93LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_/api/auth/$': {
+      id: '/_/api/auth/$'
+      path: '/_/api/auth/$'
+      fullPath: '/_/api/auth/$'
+      preLoaderRoute: typeof Char91_Char93ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   Char91_Char93LoginRoute: Char91_Char93LoginRoute,
+  Char91_Char93ApiAuthSplatRoute: Char91_Char93ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

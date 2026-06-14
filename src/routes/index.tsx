@@ -1,3 +1,4 @@
+import { getSession } from '@/lib/auth.functions'
 import {
   AppShell,
   AppShellHeader,
@@ -8,9 +9,17 @@ import {
   Table,
   Title,
 } from '@mantine/core'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
+  beforeLoad: async () => {
+    const session = await getSession()
+    if (!session) {
+      throw redirect({ to: '/_/login' })
+    }
+    return { user: session.user }
+  },
+
   component: Home,
 })
 
