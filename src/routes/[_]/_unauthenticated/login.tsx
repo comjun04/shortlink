@@ -1,20 +1,21 @@
 import TypedAnchor from '@/components/TypedAnchor'
 import { authClient } from '@/lib/auth-client'
 import {
+  Anchor,
   Button,
-  Container,
-  Paper,
+  Center,
+  Checkbox,
+  Group,
   PasswordInput,
+  Space,
   Text,
-  TextInput,
+  Title,
 } from '@mantine/core'
-import { Space } from '@mantine/core'
-import { Title } from '@mantine/core'
-import { Center } from '@mantine/core'
+import { Container, Paper, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_/signup')({
+export const Route = createFileRoute('/_/_unauthenticated/login')({
   component: RouteComponent,
 })
 
@@ -24,7 +25,6 @@ function RouteComponent() {
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      username: '',
       email: '',
       password: '',
     },
@@ -39,15 +39,14 @@ function RouteComponent() {
           <Space h="md" />
 
           <Text ta="center" fz="h2">
-            Sign Up
+            Login
           </Text>
 
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
             <form
               onSubmit={form.onSubmit((values) => {
-                authClient.signUp
+                authClient.signIn
                   .email({
-                    name: values.username,
                     email: values.email,
                     password: values.password,
                   })
@@ -56,18 +55,9 @@ function RouteComponent() {
               })}
             >
               <TextInput
-                label="Username"
-                placeholder="Choose your username"
-                required
-                radius="md"
-                key={form.key('username')}
-                {...form.getInputProps('username')}
-              />
-              <TextInput
                 label="Email"
                 placeholder="you@example.com"
                 required
-                mt="md"
                 radius="md"
                 type="email"
                 key={form.key('email')}
@@ -82,14 +72,19 @@ function RouteComponent() {
                 key={form.key('password')}
                 {...form.getInputProps('password')}
               />
+              <Group justify="space-between" mt="lg">
+                <Checkbox label="Remember me" />
+                <Anchor component="button" size="sm">
+                  Forgot password?
+                </Anchor>
+              </Group>
               <Button type="submit" fullWidth mt="xl" radius="md">
-                Sign Up
+                Sign in
               </Button>
             </form>
 
             <Text ta="center" mt="sm">
-              Already have an account?{' '}
-              <TypedAnchor to="/_/login">Login</TypedAnchor>
+              <TypedAnchor to="/_/signup">Create Account</TypedAnchor>
             </Text>
           </Paper>
         </Container>
