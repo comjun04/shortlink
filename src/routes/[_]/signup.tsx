@@ -1,5 +1,5 @@
 import TypedAnchor from '@/components/TypedAnchor'
-import { auth } from '@/lib/auth'
+import { authClient } from '@/lib/auth-client'
 import {
   Button,
   Container,
@@ -12,28 +12,15 @@ import { Space } from '@mantine/core'
 import { Title } from '@mantine/core'
 import { Center } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { createFileRoute } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-
-const signUp = createServerFn({ method: 'POST' })
-  .validator(
-    (data: { username: string; email: string; password: string }) => data,
-  )
-  .handler(async ({ data }) => {
-    await auth.api.signUpEmail({
-      body: {
-        name: data.username,
-        email: data.email,
-        password: data.password,
-      },
-    })
-  })
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_/signup')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -58,13 +45,14 @@ function RouteComponent() {
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
             <form
               onSubmit={form.onSubmit((values) => {
-                signUp({
-                  data: {
-                    username: values.username,
+                authClient.signUp
+                  .email({
+                    name: values.username,
                     email: values.email,
                     password: values.password,
-                  },
-                })
+                  })
+                  .then(() => navigate({ to: '/' }))
+                  .catch(console.error)
               })}
             >
               <TextInput

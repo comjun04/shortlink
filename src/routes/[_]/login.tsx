@@ -1,5 +1,5 @@
 import TypedAnchor from '@/components/TypedAnchor'
-import { auth } from '@/lib/auth'
+import { authClient } from '@/lib/auth-client'
 import {
   Anchor,
   Button,
@@ -13,25 +13,15 @@ import {
 } from '@mantine/core'
 import { Container, Paper, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { createFileRoute } from '@tanstack/react-router'
-import { createServerFn } from '@tanstack/react-start'
-
-const signIn = createServerFn({ method: 'POST' })
-  .validator((data: { email: string; password: string }) => data)
-  .handler(async ({ data }) => {
-    await auth.api.signInEmail({
-      body: {
-        email: data.email,
-        password: data.password,
-      },
-    })
-  })
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_/login')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
+
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -55,13 +45,13 @@ function RouteComponent() {
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
             <form
               onSubmit={form.onSubmit((values) => {
-                console.log(values)
-                signIn({
-                  data: {
+                authClient.signIn
+                  .email({
                     email: values.email,
                     password: values.password,
-                  },
-                })
+                  })
+                  .then(() => navigate({ to: '/' }))
+                  .catch(console.error)
               })}
             >
               <TextInput

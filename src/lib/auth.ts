@@ -5,6 +5,11 @@ import { db } from '@/db/instance'
 import { schema } from '@/db/schema'
 
 export const auth = betterAuth({
+  baseURL: process.env.VITE_BASE_URL,
+  trustedOrigins: (process.env.BETTER_AUTH_TRUST_LOCALHOST ?? '')
+    .split(',')
+    .filter((d) => d.trim().length > 0),
+  basePath: '/_/api/auth',
   database: drizzleAdapter(db, {
     provider: 'sqlite',
     schema,
@@ -13,4 +18,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [tanstackStartCookies()], // make sure this is the last plugin in the array
+  logger: {
+    level: 'info',
+  },
 })
