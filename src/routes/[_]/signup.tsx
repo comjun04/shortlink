@@ -1,4 +1,5 @@
 import TypedAnchor from '@/components/TypedAnchor'
+import { auth } from '@/lib/auth'
 import {
   Button,
   Container,
@@ -10,13 +11,38 @@ import {
 import { Space } from '@mantine/core'
 import { Title } from '@mantine/core'
 import { Center } from '@mantine/core'
+import { useForm } from '@mantine/form'
 import { createFileRoute } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+
+const signUp = createServerFn({ method: 'POST' })
+  .validator(
+    (data: { username: string; email: string; password: string }) => data,
+  )
+  .handler(async ({ data }) => {
+    await auth.api.signUpEmail({
+      body: {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+      },
+    })
+  })
 
 export const Route = createFileRoute('/_/signup')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      username: '',
+      email: '',
+      password: '',
+    },
+  })
+
   return (
     <main style={{ height: '100dvh' }}>
       <Center h="100%">
@@ -30,22 +56,48 @@ function RouteComponent() {
           </Text>
 
           <Paper withBorder shadow="sm" p={22} mt="sm" radius="md">
-            <TextInput
-              label="Email"
-              placeholder="you@example.com"
-              required
-              radius="md"
-            />
-            <PasswordInput
-              label="Password"
-              placeholder="Your password"
-              required
-              mt="md"
-              radius="md"
-            />
-            <Button fullWidth mt="xl" radius="md">
-              Sign Up
-            </Button>
+            <form
+              onSubmit={form.onSubmit((values) => {
+                signUp({
+                  data: {
+                    username: values.username,
+                    email: values.email,
+                    password: values.password,
+                  },
+                })
+              })}
+            >
+              <TextInput
+                label="Username"
+                placeholder="Choose your username"
+                required
+                radius="md"
+                key={form.key('username')}
+                {...form.getInputProps('username')}
+              />
+              <TextInput
+                label="Email"
+                placeholder="you@example.com"
+                required
+                mt="md"
+                radius="md"
+                type="email"
+                key={form.key('email')}
+                {...form.getInputProps('email')}
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                required
+                mt="md"
+                radius="md"
+                key={form.key('password')}
+                {...form.getInputProps('password')}
+              />
+              <Button type="submit" fullWidth mt="xl" radius="md">
+                Sign Up
+              </Button>
+            </form>
 
             <Text ta="center" mt="sm">
               Already have an account?{' '}
