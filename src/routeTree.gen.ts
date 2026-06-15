@@ -9,34 +9,37 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as Char91_Char93UnauthenticatedRouteImport } from './routes/[_]/_unauthenticated'
-import { Route as Char91_Char93UnauthenticatedSignupRouteImport } from './routes/[_]/_unauthenticated/signup'
-import { Route as Char91_Char93UnauthenticatedLoginRouteImport } from './routes/[_]/_unauthenticated/login'
+import { Route as UnauthenticatedRouteImport } from './routes/_unauthenticated'
+import { Route as MainRouteImport } from './routes/_main'
+import { Route as MainIndexRouteImport } from './routes/_main/index'
+import { Route as UnauthenticatedChar91_Char93SignupRouteImport } from './routes/_unauthenticated/[_]/signup'
+import { Route as UnauthenticatedChar91_Char93LoginRouteImport } from './routes/_unauthenticated/[_]/login'
 import { Route as Char91_Char93ApiAuthSplatRouteImport } from './routes/[_]/api/auth.$'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const UnauthenticatedRoute = UnauthenticatedRouteImport.update({
+  id: '/_unauthenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Char91_Char93UnauthenticatedRoute =
-  Char91_Char93UnauthenticatedRouteImport.update({
-    id: '/_/_unauthenticated',
-    path: '/_',
-    getParentRoute: () => rootRouteImport,
+const MainRoute = MainRouteImport.update({
+  id: '/_main',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MainIndexRoute = MainIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MainRoute,
+} as any)
+const UnauthenticatedChar91_Char93SignupRoute =
+  UnauthenticatedChar91_Char93SignupRouteImport.update({
+    id: '/_/signup',
+    path: '/_/signup',
+    getParentRoute: () => UnauthenticatedRoute,
   } as any)
-const Char91_Char93UnauthenticatedSignupRoute =
-  Char91_Char93UnauthenticatedSignupRouteImport.update({
-    id: '/signup',
-    path: '/signup',
-    getParentRoute: () => Char91_Char93UnauthenticatedRoute,
-  } as any)
-const Char91_Char93UnauthenticatedLoginRoute =
-  Char91_Char93UnauthenticatedLoginRouteImport.update({
-    id: '/login',
-    path: '/login',
-    getParentRoute: () => Char91_Char93UnauthenticatedRoute,
+const UnauthenticatedChar91_Char93LoginRoute =
+  UnauthenticatedChar91_Char93LoginRouteImport.update({
+    id: '/_/login',
+    path: '/_/login',
+    getParentRoute: () => UnauthenticatedRoute,
   } as any)
 const Char91_Char93ApiAuthSplatRoute =
   Char91_Char93ApiAuthSplatRouteImport.update({
@@ -46,76 +49,83 @@ const Char91_Char93ApiAuthSplatRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/_': typeof Char91_Char93UnauthenticatedRouteWithChildren
-  '/_/login': typeof Char91_Char93UnauthenticatedLoginRoute
-  '/_/signup': typeof Char91_Char93UnauthenticatedSignupRoute
+  '/': typeof MainIndexRoute
+  '/_/login': typeof UnauthenticatedChar91_Char93LoginRoute
+  '/_/signup': typeof UnauthenticatedChar91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/_': typeof Char91_Char93UnauthenticatedRouteWithChildren
-  '/_/login': typeof Char91_Char93UnauthenticatedLoginRoute
-  '/_/signup': typeof Char91_Char93UnauthenticatedSignupRoute
+  '/': typeof MainIndexRoute
+  '/_/login': typeof UnauthenticatedChar91_Char93LoginRoute
+  '/_/signup': typeof UnauthenticatedChar91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/_/_unauthenticated': typeof Char91_Char93UnauthenticatedRouteWithChildren
-  '/_/_unauthenticated/login': typeof Char91_Char93UnauthenticatedLoginRoute
-  '/_/_unauthenticated/signup': typeof Char91_Char93UnauthenticatedSignupRoute
+  '/_main': typeof MainRouteWithChildren
+  '/_unauthenticated': typeof UnauthenticatedRouteWithChildren
+  '/_main/': typeof MainIndexRoute
+  '/_unauthenticated/_/login': typeof UnauthenticatedChar91_Char93LoginRoute
+  '/_unauthenticated/_/signup': typeof UnauthenticatedChar91_Char93SignupRoute
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_' | '/_/login' | '/_/signup' | '/_/api/auth/$'
+  fullPaths: '/' | '/_/login' | '/_/signup' | '/_/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_' | '/_/login' | '/_/signup' | '/_/api/auth/$'
+  to: '/' | '/_/login' | '/_/signup' | '/_/api/auth/$'
   id:
     | '__root__'
-    | '/'
-    | '/_/_unauthenticated'
-    | '/_/_unauthenticated/login'
-    | '/_/_unauthenticated/signup'
+    | '/_main'
+    | '/_unauthenticated'
+    | '/_main/'
+    | '/_unauthenticated/_/login'
+    | '/_unauthenticated/_/signup'
     | '/_/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  Char91_Char93UnauthenticatedRoute: typeof Char91_Char93UnauthenticatedRouteWithChildren
+  MainRoute: typeof MainRouteWithChildren
+  UnauthenticatedRoute: typeof UnauthenticatedRouteWithChildren
   Char91_Char93ApiAuthSplatRoute: typeof Char91_Char93ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_unauthenticated': {
+      id: '/_unauthenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof UnauthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_main/': {
+      id: '/_main/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof MainIndexRouteImport
+      parentRoute: typeof MainRoute
     }
-    '/_/_unauthenticated': {
-      id: '/_/_unauthenticated'
-      path: '/_'
-      fullPath: '/_'
-      preLoaderRoute: typeof Char91_Char93UnauthenticatedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_/_unauthenticated/signup': {
-      id: '/_/_unauthenticated/signup'
-      path: '/signup'
+    '/_unauthenticated/_/signup': {
+      id: '/_unauthenticated/_/signup'
+      path: '/_/signup'
       fullPath: '/_/signup'
-      preLoaderRoute: typeof Char91_Char93UnauthenticatedSignupRouteImport
-      parentRoute: typeof Char91_Char93UnauthenticatedRoute
+      preLoaderRoute: typeof UnauthenticatedChar91_Char93SignupRouteImport
+      parentRoute: typeof UnauthenticatedRoute
     }
-    '/_/_unauthenticated/login': {
-      id: '/_/_unauthenticated/login'
-      path: '/login'
+    '/_unauthenticated/_/login': {
+      id: '/_unauthenticated/_/login'
+      path: '/_/login'
       fullPath: '/_/login'
-      preLoaderRoute: typeof Char91_Char93UnauthenticatedLoginRouteImport
-      parentRoute: typeof Char91_Char93UnauthenticatedRoute
+      preLoaderRoute: typeof UnauthenticatedChar91_Char93LoginRouteImport
+      parentRoute: typeof UnauthenticatedRoute
     }
     '/_/api/auth/$': {
       id: '/_/api/auth/$'
@@ -127,28 +137,35 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface Char91_Char93UnauthenticatedRouteChildren {
-  Char91_Char93UnauthenticatedLoginRoute: typeof Char91_Char93UnauthenticatedLoginRoute
-  Char91_Char93UnauthenticatedSignupRoute: typeof Char91_Char93UnauthenticatedSignupRoute
+interface MainRouteChildren {
+  MainIndexRoute: typeof MainIndexRoute
 }
 
-const Char91_Char93UnauthenticatedRouteChildren: Char91_Char93UnauthenticatedRouteChildren =
-  {
-    Char91_Char93UnauthenticatedLoginRoute:
-      Char91_Char93UnauthenticatedLoginRoute,
-    Char91_Char93UnauthenticatedSignupRoute:
-      Char91_Char93UnauthenticatedSignupRoute,
-  }
+const MainRouteChildren: MainRouteChildren = {
+  MainIndexRoute: MainIndexRoute,
+}
 
-const Char91_Char93UnauthenticatedRouteWithChildren =
-  Char91_Char93UnauthenticatedRoute._addFileChildren(
-    Char91_Char93UnauthenticatedRouteChildren,
-  )
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+
+interface UnauthenticatedRouteChildren {
+  UnauthenticatedChar91_Char93LoginRoute: typeof UnauthenticatedChar91_Char93LoginRoute
+  UnauthenticatedChar91_Char93SignupRoute: typeof UnauthenticatedChar91_Char93SignupRoute
+}
+
+const UnauthenticatedRouteChildren: UnauthenticatedRouteChildren = {
+  UnauthenticatedChar91_Char93LoginRoute:
+    UnauthenticatedChar91_Char93LoginRoute,
+  UnauthenticatedChar91_Char93SignupRoute:
+    UnauthenticatedChar91_Char93SignupRoute,
+}
+
+const UnauthenticatedRouteWithChildren = UnauthenticatedRoute._addFileChildren(
+  UnauthenticatedRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  Char91_Char93UnauthenticatedRoute:
-    Char91_Char93UnauthenticatedRouteWithChildren,
+  MainRoute: MainRouteWithChildren,
+  UnauthenticatedRoute: UnauthenticatedRouteWithChildren,
   Char91_Char93ApiAuthSplatRoute: Char91_Char93ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

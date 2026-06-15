@@ -15,7 +15,7 @@ import { Container, Paper, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_/_unauthenticated/login')({
+export const Route = createFileRoute('/_unauthenticated/_/login')({
   component: RouteComponent,
 })
 

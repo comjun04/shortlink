@@ -14,7 +14,7 @@ import { Center } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_/_unauthenticated/signup')({
+export const Route = createFileRoute('/_unauthenticated/_/signup')({
   component: RouteComponent,
 })
 

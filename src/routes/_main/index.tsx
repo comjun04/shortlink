@@ -1,4 +1,6 @@
+import { authClient } from '@/lib/auth-client'
 import { getSession } from '@/lib/auth.functions'
+import { Menu, Text, UnstyledButton } from '@mantine/core'
 import {
   AppShell,
   AppShellHeader,
@@ -9,9 +11,10 @@ import {
   Table,
   Title,
 } from '@mantine/core'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import { LuChevronDown, LuLogOut } from 'react-icons/lu'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_main/')({
   beforeLoad: async () => {
     const session = await getSession()
     if (!session) {
@@ -24,6 +27,9 @@ export const Route = createFileRoute('/')({
 })
 
 function Home() {
+  const navigate = useNavigate()
+  const { user } = Route.useRouteContext()
+
   return (
     <AppShell
       header={{
@@ -32,8 +38,31 @@ function Home() {
       p="md"
     >
       <AppShellHeader>
-        <Group h="100%" px="md">
+        <Group h="100%" px="md" justify="space-between">
           <Title fz="h3">Shortlink</Title>
+          <Menu>
+            <Menu.Target>
+              <UnstyledButton>
+                <Group gap="xs">
+                  <Text>{user.name}</Text>
+                  <LuChevronDown size={16} />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={<LuLogOut size={16} />}
+                onClick={() => {
+                  authClient
+                    .signOut()
+                    .then(() => navigate({ to: '/_/login' }))
+                    .catch(console.error)
+                }}
+              >
+                <Text>Logout</Text>
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </Group>
       </AppShellHeader>
       <AppShellMain>
