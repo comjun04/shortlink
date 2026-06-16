@@ -1,6 +1,14 @@
 import { authClient } from '@/lib/auth-client'
 import { getSession } from '@/lib/auth.functions'
-import { AppShell, Group, Menu, UnstyledButton, Text } from '@mantine/core'
+import {
+  AppShell,
+  Button,
+  Group,
+  Menu,
+  UnstyledButton,
+  Text,
+} from '@mantine/core'
+import { Link } from '@tanstack/react-router'
 import {
   Outlet,
   createFileRoute,
@@ -22,6 +30,21 @@ export const Route = createFileRoute('/_main')({
   },
 })
 
+function Logo() {
+  return (
+    <Button
+      variant="transparent"
+      p={0}
+      c="dark"
+      renderRoot={(props: Record<string, unknown>) => (
+        <Link to="/" {...props} />
+      )}
+    >
+      <Text fz="h2">Shortlink</Text>
+    </Button>
+  )
+}
+
 function RouteComponent() {
   const navigate = useNavigate()
   const { user } = Route.useRouteContext()
@@ -35,7 +58,8 @@ function RouteComponent() {
     >
       <AppShell.Header>
         <Group h="100%" px="md" justify="space-between">
-          <Text fz="h2">Shortlink</Text>
+          <Logo />
+
           <Menu>
             <Menu.Target>
               <UnstyledButton>
