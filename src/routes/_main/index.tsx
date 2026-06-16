@@ -1,6 +1,6 @@
 import { getSession } from '@/lib/auth.functions'
 import { Button, Checkbox, Group, Table, Title } from '@mantine/core'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { LuPlus } from 'react-icons/lu'
 
 export const Route = createFileRoute('/_main/')({
@@ -20,7 +20,14 @@ function Home() {
     <>
       <Group justify="space-between">
         <Title order={3}>All links</Title>
-        <Button leftSection={<LuPlus size={16} />}>Create</Button>
+        <Button
+          leftSection={<LuPlus size={16} />}
+          renderRoot={(props: Record<string, unknown>) => (
+            <Link to="/_/create" {...props} />
+          )}
+        >
+          Create
+        </Button>
       </Group>
       <Table>
         <Table.Thead>
