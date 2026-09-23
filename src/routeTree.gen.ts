@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthenticatedRouteImport } from './routes/_unauthenticated'
 import { Route as MainRouteImport } from './routes/_main'
+import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
 import { Route as UnauthenticatedChar91_Char93SignupRouteImport } from './routes/_unauthenticated/[_]/signup'
 import { Route as UnauthenticatedChar91_Char93LoginRouteImport } from './routes/_unauthenticated/[_]/login'
@@ -23,6 +24,11 @@ const UnauthenticatedRoute = UnauthenticatedRouteImport.update({
 } as any)
 const MainRoute = MainRouteImport.update({
   id: '/_main',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SlugRoute = SlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MainIndexRoute = MainIndexRouteImport.update({
@@ -55,6 +61,7 @@ const Char91_Char93ApiAuthSplatRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/$slug': typeof SlugRoute
   '/': typeof MainIndexRoute
   '/_/create': typeof MainChar91_Char93CreateRoute
   '/_/login': typeof UnauthenticatedChar91_Char93LoginRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/_/api/auth/$': typeof Char91_Char93ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
+  '/$slug': typeof SlugRoute
   '/': typeof MainIndexRoute
   '/_/create': typeof MainChar91_Char93CreateRoute
   '/_/login': typeof UnauthenticatedChar91_Char93LoginRoute
@@ -70,6 +78,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/$slug': typeof SlugRoute
   '/_main': typeof MainRouteWithChildren
   '/_unauthenticated': typeof UnauthenticatedRouteWithChildren
   '/_main/': typeof MainIndexRoute
@@ -80,11 +89,18 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/_/create' | '/_/login' | '/_/signup' | '/_/api/auth/$'
+  fullPaths:
+    | '/$slug'
+    | '/'
+    | '/_/create'
+    | '/_/login'
+    | '/_/signup'
+    | '/_/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/_/create' | '/_/login' | '/_/signup' | '/_/api/auth/$'
+  to: '/$slug' | '/' | '/_/create' | '/_/login' | '/_/signup' | '/_/api/auth/$'
   id:
     | '__root__'
+    | '/$slug'
     | '/_main'
     | '/_unauthenticated'
     | '/_main/'
@@ -95,6 +111,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  SlugRoute: typeof SlugRoute
   MainRoute: typeof MainRouteWithChildren
   UnauthenticatedRoute: typeof UnauthenticatedRouteWithChildren
   Char91_Char93ApiAuthSplatRoute: typeof Char91_Char93ApiAuthSplatRoute
@@ -114,6 +131,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof MainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$slug': {
+      id: '/$slug'
+      path: '/$slug'
+      fullPath: '/$slug'
+      preLoaderRoute: typeof SlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_main/': {
@@ -183,6 +207,7 @@ const UnauthenticatedRouteWithChildren = UnauthenticatedRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  SlugRoute: SlugRoute,
   MainRoute: MainRouteWithChildren,
   UnauthenticatedRoute: UnauthenticatedRouteWithChildren,
   Char91_Char93ApiAuthSplatRoute: Char91_Char93ApiAuthSplatRoute,
