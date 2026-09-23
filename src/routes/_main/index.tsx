@@ -1,8 +1,11 @@
-import { Button, Checkbox, Group, Table, Title } from '@mantine/core'
+import { Button, Checkbox, Group, Table, Text, Title } from '@mantine/core'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
 import { LuPlus } from 'react-icons/lu'
 
 import { getSession } from '@/lib/auth.functions'
+import { getLinks } from '@/lib/link.functions'
 
 export const Route = createFileRoute('/_main/')({
   beforeLoad: async () => {
@@ -17,6 +20,12 @@ export const Route = createFileRoute('/_main/')({
 })
 
 function Home() {
+  const getLinksFn = useServerFn(getLinks)
+  const linksQuery = useQuery({
+    queryKey: ['links'],
+    queryFn: () => getLinksFn(),
+  })
+
   return (
     <>
       <Group justify="space-between">
@@ -42,37 +51,53 @@ function Home() {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <Table.Tr>
-            <Table.Td>
-              <Checkbox />
-            </Table.Td>
-            <Table.Td>sample-id</Table.Td>
-            <Table.Td>
-              <a href="https://google.com">https://google.com</a>
-            </Table.Td>
-            <Table.Td>
-              <Group>
-                <Button>Edit</Button>
-                <Button variant="danger">Delete</Button>
-              </Group>
-            </Table.Td>
-          </Table.Tr>
+          {linksQuery.isPending && (
+            <Table.Tr>
+              <Table.Td colSpan={4}>
+                <Text c="dimmed" ta="center">
+                  Loading links…
+                </Text>
+              </Table.Td>
+            </Table.Tr>
+          )}
 
-          <Table.Tr>
-            <Table.Td>
-              <Checkbox />
-            </Table.Td>
-            <Table.Td>sample-id</Table.Td>
-            <Table.Td>
-              <a href="https://google.com">https://google.com</a>
-            </Table.Td>
-            <Table.Td>
-              <Group>
-                <Button>Edit</Button>
-                <Button variant="danger">Delete</Button>
-              </Group>
-            </Table.Td>
-          </Table.Tr>
+          {linksQuery.isError && (
+            <Table.Tr>
+              <Table.Td colSpan={4}>
+                <Text c="red" ta="center">
+                  Unable to load links.
+                </Text>
+              </Table.Td>
+            </Table.Tr>
+          )}
+
+          {linksQuery.isSuccess && linksQuery.data.length === 0 && (
+            <Table.Tr>
+              <Table.Td colSpan={4}>
+                <Text c="dimmed" ta="center">
+                  No links created yet.
+                </Text>
+              </Table.Td>
+            </Table.Tr>
+          )}
+
+          {linksQuery.data?.map((link) => (
+            <Table.Tr key={link.id}>
+              <Table.Td>
+                <Checkbox />
+              </Table.Td>
+              <Table.Td>{link.slug}</Table.Td>
+              <Table.Td>
+                <a href={link.redirectUrl}>{link.redirectUrl}</a>
+              </Table.Td>
+              <Table.Td>
+                <Group>
+                  <Button>Edit</Button>
+                  <Button variant="danger">Delete</Button>
+                </Group>
+              </Table.Td>
+            </Table.Tr>
+          ))}
         </Table.Tbody>
       </Table>
     </>

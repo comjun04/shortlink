@@ -1,5 +1,6 @@
 import '@mantine/core/styles.css'
 import { MantineProvider } from '@mantine/core'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   Outlet,
   createRootRoute,
@@ -28,12 +29,16 @@ export const Route = createRootRoute({
   component: RootComponent,
 })
 
+const queryClient = new QueryClient()
+
 function RootComponent() {
   return (
     <RootDocument>
-      <MantineProvider theme={theme}>
-        <Outlet />
-      </MantineProvider>
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider theme={theme}>
+          <Outlet />
+        </MantineProvider>
+      </QueryClientProvider>
     </RootDocument>
   )
 }

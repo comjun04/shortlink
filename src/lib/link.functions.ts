@@ -1,6 +1,7 @@
 import { init } from '@paralleldrive/cuid2'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
+import { desc } from 'drizzle-orm'
 
 import { db } from '@/db/instance'
 import { link } from '@/db/schema'
@@ -12,6 +13,16 @@ type CreateLinkData = {
 }
 
 const createId = init()
+
+async function requireSession() {
+  const session = await auth.api.getSession({ headers: getRequestHeaders() })
+
+  if (!session) {
+    throw new Error('Unauthorized')
+  }
+
+  return session
+}
 
 function validateCreateLinkData(data: unknown): CreateLinkData {
   if (typeof data !== 'object' || data === null) {
@@ -52,11 +63,7 @@ function validateCreateLinkData(data: unknown): CreateLinkData {
 export const createLink = createServerFn({ method: 'POST' })
   .validator(validateCreateLinkData)
   .handler(async ({ data }) => {
-    const session = await auth.api.getSession({ headers: getRequestHeaders() })
-
-    if (!session) {
-      throw new Error('Unauthorized')
-    }
+    await requireSession()
 
     const insertedLinks = await db
       .insert(link)
@@ -74,3 +81,16 @@ export const createLink = createServerFn({ method: 'POST' })
 
     return { success: true as const }
   })
+
+export const getLinks = createServerFn({ method: 'GET' }).handler(async () => {
+  await requireSession()
+
+  return db
+    .select({
+      id: link.id,
+      slug: link.slug,
+      redirectUrl: link.redirectUrl,
+    })
+    .from(link)
+    .orderBy(desc(link.createdAt))
+})
