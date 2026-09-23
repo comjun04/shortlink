@@ -1,6 +1,8 @@
 import { relations, sql } from 'drizzle-orm'
 import { sqliteTable, text, integer, index } from 'drizzle-orm/sqlite-core'
 
+// auth
+
 export const user = sqliteTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -106,4 +108,21 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }))
 
-export const schema = { user, session, account, verification }
+// links
+
+export const link = sqliteTable('link', {
+  id: text('id').primaryKey(),
+  slug: text('slug').notNull().unique(),
+  redirectUrl: text('url').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+})
+
+// =====
+
+export const schema = { user, session, account, verification, link }
