@@ -1,9 +1,10 @@
-import { db } from '@/db/instance'
-import { link } from '@/db/schema'
-import { auth } from '@/lib/auth'
 import { init } from '@paralleldrive/cuid2'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
+
+import { db } from '@/db/instance'
+import { link } from '@/db/schema'
+import { auth } from '@/lib/auth'
 
 type CreateLinkData = {
   slug: string

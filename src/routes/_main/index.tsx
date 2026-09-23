@@ -1,7 +1,8 @@
-import { getSession } from '@/lib/auth.functions'
 import { Button, Checkbox, Group, Table, Title } from '@mantine/core'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { LuPlus } from 'react-icons/lu'
+
+import { getSession } from '@/lib/auth.functions'
 
 export const Route = createFileRoute('/_main/')({
   beforeLoad: async () => {

@@ -1,5 +1,3 @@
-import TypedAnchor from '@/components/TypedAnchor'
-import { authClient } from '@/lib/auth-client'
 import {
   Button,
   Container,
@@ -13,6 +11,9 @@ import { Title } from '@mantine/core'
 import { Center } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
+
+import TypedAnchor from '@/components/TypedAnchor'
+import { authClient } from '@/lib/auth-client'
 
 export const Route = createFileRoute('/_unauthenticated/_/signup')({
   component: RouteComponent,

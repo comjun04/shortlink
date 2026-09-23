@@ -1,5 +1,3 @@
-import { authClient } from '@/lib/auth-client'
-import { getSession } from '@/lib/auth.functions'
 import {
   AppShell,
   Button,
@@ -16,6 +14,9 @@ import {
   useNavigate,
 } from '@tanstack/react-router'
 import { LuChevronDown, LuLogOut } from 'react-icons/lu'
+
+import { authClient } from '@/lib/auth-client'
+import { getSession } from '@/lib/auth.functions'
 
 export const Route = createFileRoute('/_main')({
   component: RouteComponent,

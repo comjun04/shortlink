@@ -1,13 +1,13 @@
 import '@mantine/core/styles.css'
-
-import type { ReactNode } from 'react'
+import { MantineProvider } from '@mantine/core'
 import {
   Outlet,
   createRootRoute,
   HeadContent,
   Scripts,
 } from '@tanstack/react-router'
-import { MantineProvider } from '@mantine/core'
+import type { ReactNode } from 'react'
+
 import theme from '../theme'
 
 export const Route = createRootRoute({
