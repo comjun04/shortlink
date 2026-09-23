@@ -14,7 +14,9 @@
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "migrate:generate": "drizzle-kit generate",
+    "migrate:apply": "drizzle-kit migrate"
   },
   "dependencies": {
     "@mantine/core": "^9.3.1",
