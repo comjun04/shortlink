@@ -1,7 +1,7 @@
 import { init } from '@paralleldrive/cuid2'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
-import { desc } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { z } from 'zod'
 
 import { db } from '@/db/instance'
@@ -66,3 +66,20 @@ export const getLinks = createServerFn({ method: 'GET' }).handler(async () => {
     .from(link)
     .orderBy(desc(link.createdAt))
 })
+
+const DeleteLinkSchema = z.object({
+  id: z.string().min(1),
+})
+
+export const deleteLink = createServerFn({ method: 'POST' })
+  .validator(DeleteLinkSchema)
+  .handler(async ({ data }) => {
+    await requireSession()
+
+    const deletedLinks = await db
+      .delete(link)
+      .where(eq(link.id, data.id))
+      .returning({ id: link.id })
+
+    return { success: deletedLinks.length > 0 }
+  })

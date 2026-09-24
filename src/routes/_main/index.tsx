@@ -1,11 +1,20 @@
-import { Button, Checkbox, Group, Table, Text, Title } from '@mantine/core'
-import { useQuery } from '@tanstack/react-query'
+import {
+  Button,
+  Checkbox,
+  Group,
+  Modal,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
+import { useState } from 'react'
 import { LuPlus } from 'react-icons/lu'
 
 import { getSession } from '@/lib/auth.functions'
-import { getLinks } from '@/lib/link.functions'
+import { deleteLink, getLinks } from '@/lib/link.functions'
 
 export const Route = createFileRoute('/_main/')({
   beforeLoad: async () => {
@@ -20,11 +29,37 @@ export const Route = createFileRoute('/_main/')({
 })
 
 function Home() {
+  const queryClient = useQueryClient()
   const getLinksFn = useServerFn(getLinks)
+  const deleteLinkFn = useServerFn(deleteLink)
+  const [linkToDelete, setLinkToDelete] = useState<{
+    id: string
+    slug: string
+  } | null>(null)
   const linksQuery = useQuery({
     queryKey: ['links'],
     queryFn: () => getLinksFn(),
   })
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const result = await deleteLinkFn({ data: { id } })
+
+      if (!result.success) {
+        throw new Error('Link not found')
+      }
+    },
+    onSuccess: async () => {
+      setLinkToDelete(null)
+      await queryClient.invalidateQueries({ queryKey: ['links'] })
+    },
+  })
+
+  const closeDeleteModal = () => {
+    if (!deleteMutation.isPending) {
+      setLinkToDelete(null)
+      deleteMutation.reset()
+    }
+  }
 
   return (
     <>
@@ -93,13 +128,66 @@ function Home() {
               <Table.Td>
                 <Group>
                   <Button>Edit</Button>
-                  <Button variant="danger">Delete</Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      deleteMutation.reset()
+                      setLinkToDelete({ id: link.id, slug: link.slug })
+                    }}
+                  >
+                    Delete
+                  </Button>
                 </Group>
               </Table.Td>
             </Table.Tr>
           ))}
         </Table.Tbody>
       </Table>
+
+      <Modal
+        opened={linkToDelete !== null}
+        onClose={closeDeleteModal}
+        title="Delete link"
+        centered
+        closeOnClickOutside={!deleteMutation.isPending}
+        closeOnEscape={!deleteMutation.isPending}
+        withCloseButton={!deleteMutation.isPending}
+      >
+        <Text>
+          Are you sure you want to delete the link{' '}
+          <Text span fw={600}>
+            /{linkToDelete?.slug}
+          </Text>
+          ? This action cannot be undone.
+        </Text>
+
+        {deleteMutation.isError && (
+          <Text c="red" mt="sm">
+            Unable to delete the link. Please try again.
+          </Text>
+        )}
+
+        <Group justify="flex-end" mt="lg">
+          <Button
+            variant="default"
+            onClick={closeDeleteModal}
+            disabled={deleteMutation.isPending}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            loading={deleteMutation.isPending}
+            onClick={() => {
+              if (linkToDelete) {
+                deleteMutation.mutate(linkToDelete.id)
+              }
+            }}
+          >
+            Delete
+          </Button>
+        </Group>
+      </Modal>
     </>
   )
 }
