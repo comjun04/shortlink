@@ -3,18 +3,19 @@ import {
   Button,
   Code,
   Container,
-  TextInput,
   Text,
+  TextInput,
   Title,
 } from '@mantine/core'
 import { schemaResolver, useForm } from '@mantine/form'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
 import z from 'zod'
 
 import { BaseUrl } from '@/constant'
-import { createLink } from '@/lib/link.functions'
+import { getLink, updateLink } from '@/lib/link.functions'
 
 const FormSchema = z.object({
   slug: z
@@ -22,7 +23,7 @@ const FormSchema = z.object({
     .min(1, 'Slug cannot be empty')
     .refine(
       (val) => val !== '_',
-      'This slug is used as internal paths and cannot be used',
+      'This slug is used as an internal path and cannot be used',
     )
     .refine(
       (val) => /^[a-z0-9_-]+$/gi.test(val),
@@ -31,18 +32,37 @@ const FormSchema = z.object({
   redirectUrl: z.httpUrl('Input is not a valid URL'),
 })
 
-export const Route = createFileRoute('/_main/_/create')({
-  component: RouteComponent,
+export const Route = createFileRoute('/_main/_/link/$id')({
+  beforeLoad: async ({ params }) => {
+    const link = await getLink({ data: { id: params.id } })
+
+    if (!link) {
+      throw notFound()
+    }
+
+    return { link }
+  },
+  component: EditLinkPage,
 })
 
-function RouteComponent() {
-  const navigate = useNavigate()
-  const createLinkFn = useServerFn(createLink)
-  const [submitError, setSubmitError] = useState<string | null>(null)
+function EditLinkPage() {
+  const { link } = Route.useRouteContext()
 
+  return <EditLinkForm link={link} />
+}
+
+function EditLinkForm({
+  link,
+}: {
+  link: { id: string; slug: string; redirectUrl: string }
+}) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const updateLinkFn = useServerFn(updateLink)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const form = useForm({
     mode: 'controlled',
-    initialValues: { slug: '', redirectUrl: '' },
+    initialValues: { slug: link.slug, redirectUrl: link.redirectUrl },
     validateInputOnChange: true,
     validate: schemaResolver(FormSchema, { sync: true }),
   })
@@ -51,22 +71,27 @@ function RouteComponent() {
     setSubmitError(null)
 
     try {
-      const result = await createLinkFn({ data: values })
+      const result = await updateLinkFn({ data: { id: link.id, ...values } })
 
       if (!result.success) {
-        form.setFieldError('slug', result.error)
+        if (result.error === 'This slug is already in use') {
+          form.setFieldError('slug', result.error)
+        } else {
+          setSubmitError(result.error)
+        }
         return
       }
 
+      await queryClient.invalidateQueries({ queryKey: ['links'] })
       await navigate({ to: '/' })
     } catch {
-      setSubmitError('Unable to create the link. Please try again.')
+      setSubmitError('Unable to update the link. Please try again.')
     }
   })
 
   return (
     <Container>
-      <Title order={3}>Create new Link</Title>
+      <Title order={3}>Edit link</Title>
 
       <Box mt="md">
         <form onSubmit={handleSubmit}>
@@ -78,7 +103,7 @@ function RouteComponent() {
               {...form.getInputProps('slug')}
             />
             <Text>
-              The created Link will be{' '}
+              The updated link will be{' '}
               <Code>
                 {BaseUrl}/{form.values.slug}
               </Code>
@@ -100,7 +125,7 @@ function RouteComponent() {
           )}
 
           <Button type="submit" mt="md" loading={form.submitting}>
-            Create
+            Save changes
           </Button>
         </form>
       </Box>

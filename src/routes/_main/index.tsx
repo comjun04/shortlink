@@ -127,7 +127,17 @@ function Home() {
               </Table.Td>
               <Table.Td>
                 <Group>
-                  <Button>Edit</Button>
+                  <Button
+                    renderRoot={(props: Record<string, unknown>) => (
+                      <Link
+                        to="/_/link/$id"
+                        params={{ id: link.id }}
+                        {...props}
+                      />
+                    )}
+                  >
+                    Edit
+                  </Button>
                   <Button
                     variant="danger"
                     onClick={() => {
