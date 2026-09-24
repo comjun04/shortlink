@@ -2,15 +2,11 @@ import { init } from '@paralleldrive/cuid2'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeaders } from '@tanstack/react-start/server'
 import { desc } from 'drizzle-orm'
+import { z } from 'zod'
 
 import { db } from '@/db/instance'
 import { link } from '@/db/schema'
 import { auth } from '@/lib/auth'
-
-type CreateLinkData = {
-  slug: string
-  redirectUrl: string
-}
 
 const createId = init()
 
@@ -24,44 +20,20 @@ async function requireSession() {
   return session
 }
 
-function validateCreateLinkData(data: unknown): CreateLinkData {
-  if (typeof data !== 'object' || data === null) {
-    throw new Error('Invalid link data')
-  }
-
-  const { slug, redirectUrl } = data as Record<string, unknown>
-
-  if (
-    typeof slug !== 'string' ||
-    slug.length === 0 ||
-    slug === '_' ||
-    !/^[a-z0-9_-]+$/i.test(slug)
-  ) {
-    throw new Error('Invalid slug')
-  }
-
-  if (typeof redirectUrl !== 'string') {
-    throw new Error('Invalid redirect URL')
-  }
-
-  try {
-    const url = new URL(redirectUrl)
-
-    if (
-      !['http:', 'https:'].includes(url.protocol) ||
-      url.hostname === 'localhost'
-    ) {
-      throw new Error('Invalid redirect URL')
-    }
-  } catch {
-    throw new Error('Invalid redirect URL')
-  }
-
-  return { slug, redirectUrl }
-}
+const CreateLinkSchema = z.object(
+  {
+    slug: z
+      .string('Invalid slug')
+      .min(1, 'Slug too short')
+      .refine((val) => val !== '_', 'Invalid slug')
+      .refine((val) => /^[a-z0-9_-]+$/gi.test(val), 'Invalid slug'),
+    redirectUrl: z.httpUrl('Invalid redirect URL'),
+  },
+  'Invalid data',
+)
 
 export const createLink = createServerFn({ method: 'POST' })
-  .validator(validateCreateLinkData)
+  .validator(CreateLinkSchema)
   .handler(async ({ data }) => {
     await requireSession()
 

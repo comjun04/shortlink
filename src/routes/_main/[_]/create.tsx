@@ -7,12 +7,28 @@ import {
   Text,
   Title,
 } from '@mantine/core'
-import { isUrl, useForm } from '@mantine/form'
+import { schemaResolver, useForm } from '@mantine/form'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useServerFn } from '@tanstack/react-start'
 import { useState } from 'react'
+import z from 'zod'
 
 import { createLink } from '@/lib/link.functions'
+
+const FormSchema = z.object({
+  slug: z
+    .string()
+    .min(1, 'Slug cannot be empty')
+    .refine(
+      (val) => val !== '_',
+      'This slug is used as internal paths and cannot be used',
+    )
+    .refine(
+      (val) => /^[a-z0-9_-]+$/gi.test(val),
+      'Slug contains invalid characters',
+    ),
+  redirectUrl: z.httpUrl('Input is not a valid URL'),
+})
 
 export const Route = createFileRoute('/_main/_/create')({
   component: RouteComponent,
@@ -31,17 +47,7 @@ function RouteComponent() {
     mode: 'controlled',
     initialValues: { slug: '', redirectUrl: '' },
     validateInputOnChange: true,
-    validate: {
-      slug: (value) => {
-        if (value.length < 1) return 'Slug cannot be empty'
-        if (value === '_')
-          return 'This slug is used as internal paths and cannot be used'
-
-        if (/^[a-z0-9_-]+$/gi.test(value)) return null
-        else return 'Slug contains invalid characters'
-      },
-      redirectUrl: isUrl('Input is not a valid URL'),
-    },
+    validate: schemaResolver(FormSchema, { sync: true }),
   })
 
   const handleSubmit = form.onSubmit(async (values) => {
